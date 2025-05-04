@@ -23,7 +23,16 @@ const login = () => {
     storedUser.role === role.value
   ) {
     alert('Login successful!')
-    router.push('/admin-shop') // redirect after login
+
+    // Redirect based on role
+    if (role.value === 'Admin') {
+      router.push('/admin-shop')
+    } else if (role.value === 'Customer') {
+      router.push('/customer-home')
+    } else {
+      alert('Unknown role.')
+    }
+
   } else {
     alert('Invalid email, password, or role!')
   }
@@ -37,7 +46,11 @@ const login = () => {
         <v-col cols="12" md="6" class="mx-auto pt-16">
           <v-card class="mx-auto" elevation="24">
             <v-card-title class="text-center">
-              <v-img class="mx-auto" src="/images/lbb.png" :width="mobile ? '75%' : '25%'" />
+              <v-img
+                class="mx-auto"
+                src="/images/lbb.png"
+                :width="mobile ? '75%' : '25%'"
+              />
               <h3 class="font-weight-bold">Welcome to Pasteurized Milk</h3>
               <p>High-quality Milk</p>
             </v-card-title>
@@ -66,7 +79,13 @@ const login = () => {
                   variant="outlined"
                   required
                 />
-                <v-btn class="mt-2" type="submit" block color="primary" prepend-icon="→">
+                <v-btn
+                  class="mt-2"
+                  type="submit"
+                  block
+                  color="primary"
+                  prepend-icon="mdi-login"
+                >
                   Login
                 </v-btn>
               </v-form>

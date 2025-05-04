@@ -1,12 +1,22 @@
 import { createRouter, createWebHistory } from 'vue-router';
+
 import LoginView from '@/views/auth/LoginView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
-import AdminShopView from '@/views/auth/AdminShopView.vue'; 
-import CusShopView from '@/views/auth/CusShopView.vue'; // updated import for customer shop view
+
+import AdminShopView from '@/views/auth/AdminShopView.vue';
+import AdminProfileView from '@/views/auth/AdminProfileView.vue';
+import AdminReviewView from '@/views/auth/AdminReviewView.vue';
+import AdminOrders from '@/views/auth/AdminOrders.vue';
+
+import CusProfileView from '@/views/auth/CusProfileView.vue';
+import CusShopView from '@/views/auth/CusShopView.vue';
+import CusHomeView from '@/views/auth/CusHomeView.vue';
+import CusOrderStatusView from '@/views/auth/CusOrderStatusView.vue'; // ✅ New import
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // Public routes
     {
       path: '/',
       name: 'login',
@@ -17,39 +27,82 @@ const router = createRouter({
       name: 'register',
       component: RegisterView,
     },
+
+    // Admin routes
     {
-      path: '/dashboard',  // Admin dashboard route
-      name: 'dashboard',
-      component: AdminShopView,
-      meta: {
-        requiresAdmin: true,
-      },
+      path: '/admin-profile',
+      name: 'admin-profile',
+      component: AdminProfileView,
+      meta: { requiresAdmin: true },
     },
     {
-      path: '/admin-shop',  // Customer dashboard route
+      path: '/admin-review',
+      name: 'admin-review',
+      component: AdminReviewView,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin-orders',
+      name: 'admin-orders',
+      component: AdminOrders,
+      meta: { requiresAdmin: true },
+    },
+    {
+      path: '/admin-shop',
       name: 'admin-shop',
-      component: CusShopView, // This is now using the correct customer shop view
-      meta: {
-        requiresCustomer: true,
-      },
-    }
+      component: AdminShopView,
+      meta: { requiresAdmin: true },
+    },
+
+    // Customer routes
+    {
+      path: '/customer-home',
+      name: 'customer-home',
+      component: CusHomeView,
+      meta: { requiresCustomer: true },
+    },
+    {
+      path: '/customer-shop',
+      name: 'customer-shop',
+      component: CusShopView,
+      meta: { requiresCustomer: true },
+    },
+    {
+      path: '/customer-profile',
+      name: 'customer-profile',
+      component: CusProfileView,
+      meta: { requiresCustomer: true },
+    },
+    {
+      path: '/customer-status', // ✅ New route
+      name: 'customer-status',
+      component: CusOrderStatusView,
+      meta: { requiresCustomer: true },
+    },
   ],
 });
 
-// Add navigation guard to check for admin or customer authentication
+// ✅ Route Guard
 router.beforeEach((to, from, next) => {
   const storedUser = JSON.parse(localStorage.getItem('registeredUser'));
-  
-  // If the route requires admin and the user is not an admin, redirect to login
-  if (to.meta.requiresAdmin && (!storedUser || storedUser.role !== 'Admin')) {
-    next('/'); // Redirect to login page if user is not an admin
-  } 
-  // If the route requires a customer and the user is not a customer, redirect to login
-  else if (to.meta.requiresCustomer && (!storedUser || storedUser.role !== 'Customer')) {
-    next('/'); // Redirect to login page if user is not a customer
-  }
-  else {
-    next(); // Proceed to the requested route
+  console.log('Stored user:', storedUser);
+
+  if (to.meta.requiresAdmin) {
+    if (!storedUser || storedUser.role !== 'Admin') {
+      console.log('User is not an admin, redirecting...');
+      next('/');
+    } else {
+      next();
+    }
+  } else if (to.meta.requiresCustomer) {
+    if (!storedUser || storedUser.role !== 'Customer') {
+      console.log('User is not a customer, redirecting...');
+      next('/');
+    } else {
+      next();
+    }
+  } else {
+    next(); // Public route
   }
 });
 

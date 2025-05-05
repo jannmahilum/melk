@@ -20,7 +20,7 @@
         <ul>
           <li><strong>Quantity:</strong> {{ order.quantity }}</li>
           <li><strong>Status:</strong> {{ order.status }}</li>
-          <li><strong>Date to Deliver:</strong> {{ order.date }}</li>
+          <li><strong>Date to Deliver:Within 24 hrs</strong> {{ order.date }}</li>
           <li><strong>Price:</strong> ₱{{ order.price }}</li>
         </ul>
       </div>
